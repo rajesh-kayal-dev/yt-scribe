@@ -53,9 +53,9 @@ export function RegisterPage({ onNavigate, onAuthSuccess }) {
 
   const handleSocialSignup = (provider) => {
     if (provider === 'Google') {
-      window.location.href = 'http://localhost:5000/api/auth/google';
+      window.location.href = "https://yt-scribe.onrender.com/api/auth/google";
     } else if (provider === 'GitHub') {
-      window.location.href = 'http://localhost:5000/api/auth/github';
+      window.location.href = 'https://yt-scribe.onrender.com/api/auth/github';
     }
   };
 
