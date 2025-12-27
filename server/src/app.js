@@ -1,9 +1,13 @@
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+
 import { passport, configurePassport } from './config/passport.js';
+
 import adminRoutes from './routes/adminRoutes.js';
 import transcriptRoutes from './routes/transcriptRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -13,53 +17,74 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
+
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
-// Configure Passport strategies (Google, GitHub)
+/* =========================
+   Path helpers (REQUIRED)
+========================= */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/* =========================
+   Passport setup
+========================= */
 configurePassport();
 
+/* =========================
+   Environment
+========================= */
 const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
 
-// Security headers
+/* =========================
+   Security & Middleware
+========================= */
 app.use(helmet());
 
-// CORS configuration to allow requests from the React frontend
 app.use(
   cors({
     origin: clientUrl,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization',
+    ],
   })
 );
 
-// Parse JSON request bodies
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-
-// Parse cookies (needed for reading auth tokens)
 app.use(cookieParser());
 
-// Initialize Passport for OAuth
 app.use(passport.initialize());
 
-// Rate limiting for auth routes to help prevent brute-force attacks
+/* =========================
+   Rate limiter (Auth)
+========================= */
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // limit each IP to 20 auth requests per window
-  message: 'Too many auth requests from this IP, please try again later.',
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: 'Too many auth requests, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Simple health check route to verify the server is running
+/* =========================
+   Health Check (IMPORTANT)
+========================= */
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'API is healthy' });
+  res.status(200).json({ success: true, message: 'API is healthy' });
 });
 
-// Mount API routes
+/* =========================
+   API Routes
+========================= */
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
@@ -67,14 +92,24 @@ app.use('/api/playlists', playlistRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/payment', paymentRoutes);
-
-// Notes (AI + manual)
 app.use('/api/notes', noteRoutes);
+app.use('/api/transcript', transcriptRoutes);
 
-//Mount transcript routes
-app.use("/api/transcript", transcriptRoutes);
+/* =========================
+   SERVE FRONTEND (CRITICAL)
+========================= */
+// Vite build folder
+const clientBuildPath = path.join(__dirname, '../../client/build');
 
-// Global error handler (keep this last)
+app.use(express.static(clientBuildPath));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(clientBuildPath, 'index.html'));
+});
+
+/* =========================
+   Error Handler (LAST)
+========================= */
 app.use(errorHandler);
 
 export default app;
