@@ -39,7 +39,7 @@ export function LoginPage({ onNavigate, onAuthSuccess }) {
     }
   };
 
-  const API_URL = 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL;
 
   // For OAuth, we simply redirect the browser to the backend OAuth route
   const handleSocialLogin = (provider) => {

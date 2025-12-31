@@ -52,12 +52,20 @@ export function RegisterPage({ onNavigate, onAuthSuccess }) {
   };
 
   const handleSocialSignup = (provider) => {
-    if (provider === 'Google') {
-      window.location.href = "https://yt-scribe.onrender.com/api/auth/google";
-    } else if (provider === 'GitHub') {
-      window.location.href = 'https://yt-scribe.onrender.com/api/auth/github';
-    }
-  };
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  if (!API_URL) {
+    console.error('VITE_API_URL is not defined');
+    return;
+  }
+
+  if (provider === 'google') {
+    window.location.href = `${API_URL}/api/auth/google`;
+  } else if (provider === 'github') {
+    window.location.href = `${API_URL}/api/auth/github`;
+  }
+};
+
 
   return (
     <div className="min-h-screen flex">

@@ -1,7 +1,7 @@
 // Simple API helper for authentication-related requests
 // Uses the Fetch API and sends cookies (credentials) with every request
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-const API_BASE_URL = 'http://localhost:5000';
 
 async function request(path, options = {}) {
   const response = await fetch(API_BASE_URL + path, {
