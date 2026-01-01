@@ -29,7 +29,9 @@
     "@radix-ui/react-toggle": "^1.1.2",
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
+    "@vitejs/plugin-react-swc": "^3.10.2",
     "axios": "^1.13.2",
+    "build": "^0.1.4",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "*",
@@ -47,14 +49,12 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.2",
     "remark-gfm": "^4.0.1",
+    "socket.io-client": "^4.7.5",
     "sonner": "^2.0.3",
     "tailwind-merge": "*",
     "tailwindcss": "*",
     "vaul": "^1.1.2",
-    "socket.io-client": "^4.7.5",
-
-    "vite": "^6.4.1",
-    "@vitejs/plugin-react-swc": "^3.10.2"
+    "vite": "^6.4.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.0"
