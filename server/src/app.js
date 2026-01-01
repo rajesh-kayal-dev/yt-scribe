@@ -22,8 +22,11 @@ import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
+/* 🔥 REQUIRED FOR RENDER + RATE-LIMIT (ONLY FIX) */
+app.set('trust proxy', 1);
+
 /* =========================
-   Path helpers (REQUIRED)
+   Path helpers
 ========================= */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,10 +79,10 @@ const authLimiter = rateLimit({
 });
 
 /* =========================
-   Health Check (IMPORTANT)
+   Health Check
 ========================= */
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ success: true, message: 'API is healthy' });
+  res.status(200).json({ success: true });
 });
 
 /* =========================
@@ -96,10 +99,9 @@ app.use('/api/notes', noteRoutes);
 app.use('/api/transcript', transcriptRoutes);
 
 /* =========================
-   SERVE FRONTEND (CRITICAL)
+   Serve Frontend (SPA)
 ========================= */
-// Vite build folder
-const clientBuildPath = path.join(__dirname, '../../client/build');
+const clientBuildPath = path.join(__dirname, '../../client/dist');
 
 app.use(express.static(clientBuildPath));
 
@@ -108,7 +110,7 @@ app.get('*', (req, res) => {
 });
 
 /* =========================
-   Error Handler (LAST)
+   Error Handler
 ========================= */
 app.use(errorHandler);
 
