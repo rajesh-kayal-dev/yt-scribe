@@ -101,7 +101,7 @@ app.use('/api/transcript', transcriptRoutes);
 /* =========================
    Serve Frontend (SPA)
 ========================= */
-const clientBuildPath = path.join(__dirname, '../../client/dist');
+const clientBuildPath = path.join(__dirname, '../../client/build');
 
 app.use(express.static(clientBuildPath));
 
